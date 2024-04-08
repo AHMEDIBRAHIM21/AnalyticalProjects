@@ -1,0 +1,80 @@
+- I installed these pachages so that I can vizualize and manipulate the data:
+- tidyverse is a collection of R packages designed for data science.
+- skimr is a package for generating summary statistics and visualizations for data frames
+- janitor is a package for cleaning and tidying messy datasets
+- dplyr is a package for data manipulation and transformation.
+install.packages("tidyverse")
+library(tidyverse)
+install.packages("skimr")
+library(skimr)
+install.packages("janitor")
+library(janitor)
+install.packages("dplyr")
+library(dplyr)
+
+-------------------------------------- 
+---I inputed the data (hotel_bookings) so that I could view it with certain functions such as (head) and (summary) to get a good idea about the columns that exist within the data and see what should be analyzed for patterns¶
+hotel_bookings <- list.files("hotel_bookings.csv")
+
+view(hotel_bookings)
+head(hotel_bookings)
+summary(hotel_bookings)
+
+---I combined some of the columns here using the unite function and renamed the columns to get another look at the data
+
+trimmed_df <- hotel_bookings %>% select(hotel, is_canceled) %>% rename(hotel_type = hotel)
+bookings_year_month <- hotel_bookings %>% select(arrival_date_year, arrival_date_month) %>% 
+  unite(arrival_month_year, c(arrival_date_month, arrival_date_year))
+
+--- I further explored the data by doing some calculations on the certain variables to get a better understanding like lead_time
+
+hotel_summary <-hotel_bookings %>% group_by(hotel) %>% 
+  summarise(mean = mean(lead_time), min = min(lead_time), max = max(lead_time))
+----------------------------------------------------------
+Data Vizualization
+
+---I wanted to find out which market segments generate the largest number of bookings,
+and where these bookings are made (city hotels or resort hotels)
+
+install.packages("ggplot2")
+library(ggplot2)
+ggplot(hotel_bookings) +
+  geom_bar(aes(market_segment, fill = market_segment)) +
+  facet_grid(~hotel) +
+  theme(axis.text.x = element_text(angle = 45))
+
+Results = This shows that the online market segment dominates in both hotels by a large margin. 
+Therefore the focus of advertisment should be pushed online more to maximize cutomers
+
+
+--- Next I wanted to know if there was a relationship between lead time and
+guests traveling with children for online bookings at city hotels
+
+ggplot(hotel_bookings) + geom_point(aes(lead_time, children))
+
+Results = This shows that there is a common pattern where the more children in the booking, the less in advance these bookings would happen.
+
+This means that all marketing for hotel booking targeting families, should happen closer to the booking dates to maximize family bookings
+
+
+---Next I wanted to know if customers preffered a time of year for bookings
+
+hotel_bookings$arrival_date_month <- factor(hotel_bookings$arrival_date_month,
+  levels = c("January", "February", "March", "April","May", "June", 
+   "July", "August", "September", "October", "November", "December"))
+
+ggplot(hotel_bookings) + 
+  geom_bar(aes(arrival_date_month, fill = arrival_date_month)) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+Results = The graph shows that bookings go up in the seasons of srping and summer, and go down in the seasons of winter and fall.¶
+This is when most people take vacations so its best to cater certain marketing strategies to these seasons, escpecially during the warm time of year.¶
+
+Conclusion:
+To increase revenue, the patterns and trends need to be acted upon by the marketing team to 
+ensure that the target audience is being targeted based on the timings and conditions.
+This will ensure higher customer demand and aid in reaching economic succession.
+
+
+
+
